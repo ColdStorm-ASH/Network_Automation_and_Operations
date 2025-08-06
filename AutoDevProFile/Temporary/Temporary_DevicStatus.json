@@ -1,0 +1,27 @@
+[
+    {
+        "Dev_Name": "AutoConfig_R1",
+        "IP": "192.168.56.3",
+        "ping_reachable": true,
+        "SSH_reachable": true,
+        "Name_Comparison": "pass"
+    },
+    {
+        "Dev_Name": "AutoConfig_R2",
+        "IP": "192.168.56.4",
+        "ping_reachable": true,
+        "SSH_reachable": true,
+        "Name_Comparison": "pass"
+    },
+    {
+        "Dev_Name": "AutoConfig_R3",
+        "IP": "192.168.56.5",
+        "ping_reachable": true,
+        "SSH_reachable": true,
+        "Name_Comparison": "pass"
+    },
+    {
+        "result": "pass",
+        "datetime": "2025-08-06T13:41:18.308553"
+    }
+]

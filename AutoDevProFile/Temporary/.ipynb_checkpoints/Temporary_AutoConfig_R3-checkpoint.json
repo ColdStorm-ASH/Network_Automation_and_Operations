@@ -1,0 +1,77 @@
+[
+    {
+        "Device_Name": "AutoConfig_R3"
+    },
+    {
+        "sheet_name": "Port_IP_Sheet(Router)",
+        "config": {
+            "G 0/0": null,
+            "G 0/1": "10.10.11.2/24",
+            "G 0/2": null,
+            "loopback 0": "3.3.3.3/32",
+            "loopback 1": "172.16.4.0/24",
+            "loopback 2": null,
+            "loopback 3": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "10.10.10.0",
+            "Mask": "255.255.255.0",
+            "Next-hop_IP": "10.10.11.1",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "1.1.1.1",
+            "Mask": "255.255.255.255",
+            "Next-hop_IP": "10.10.11.1",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "2.2.2.2",
+            "Mask": "255.255.255.255",
+            "Next-hop_IP": "10.10.11.1",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "172.16.1.0",
+            "Mask": "255.255.255.0",
+            "Next-hop_IP": "10.10.11.1",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "172.16.2.0",
+            "Mask": "255.255.255.0",
+            "Next-hop_IP": "10.10.11.1",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "172.16.3.0",
+            "Mask": "255.255.255.0",
+            "Next-hop_IP": "10.10.11.1",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    }
+]

@@ -1,0 +1,140 @@
+anaconda-anon-usage @ file:///croot/anaconda-anon-usage_1749054771823/work
+annotated-types @ file:///croot/annotated-types_1709542908624/work
+anyio==4.9.0
+archspec @ file:///croot/archspec_1709217642129/work
+argon2-cffi==25.1.0
+argon2-cffi-bindings==21.2.0
+arrow==1.3.0
+asttokens==3.0.0
+async-lru==2.0.5
+attrs==25.3.0
+babel==2.17.0
+bcrypt==4.3.0
+beautifulsoup4==4.13.4
+bleach==6.2.0
+boltons @ file:///croot/boltons_1751383775419/work
+brotlicffi @ file:///croot/brotlicffi_1736182461069/work
+certifi @ file:///croot/certifi_1752653701669/work/certifi
+cffi @ file:///croot/cffi_1736182485317/work
+charset-normalizer @ file:///croot/charset-normalizer_1721748349566/work
+comm==0.2.2
+conda @ file:///croot/conda_1749171252582/work/conda-src
+conda-anaconda-telemetry @ file:///croot/conda-anaconda-telemetry_1751061994888/work
+conda-anaconda-tos @ file:///croot/conda-anaconda-tos_1752801564376/work
+conda-content-trust @ file:///croot/conda-content-trust_1714483159009/work
+conda-libmamba-solver @ file:///croot/conda-libmamba-solver_1745607008911/work/src
+conda-package-handling @ file:///croot/conda-package-handling_1731369017509/work
+conda_package_streaming @ file:///croot/conda-package-streaming_1751307506088/work
+cryptography @ file:///croot/cryptography_1748977429425/work
+debugpy==1.8.15
+decorator==5.2.1
+defusedxml==0.7.1
+distro @ file:///croot/distro_1714488253808/work
+et_xmlfile==2.0.0
+exceptiongroup==1.3.0
+executing==2.2.0
+fastjsonschema==2.21.1
+fqdn==1.5.1
+frozendict @ file:///croot/frozendict_1713194832637/work
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna @ file:///croot/idna_1714398848350/work
+ipykernel==6.30.0
+ipython==8.37.0
+ipywidgets==8.1.7
+isoduration==20.11.0
+jedi==0.19.2
+Jinja2==3.1.6
+json5==0.12.0
+jsonpatch @ file:///croot/jsonpatch_1714483231291/work
+jsonpointer==2.1
+jsonschema==4.25.0
+jsonschema-specifications==2025.4.1
+jupyter==1.1.1
+jupyter-console==6.6.3
+jupyter-events==0.12.0
+jupyter-lsp==2.2.6
+jupyter_client==8.6.3
+jupyter_core==5.8.1
+jupyter_server==2.16.0
+jupyter_server_terminals==0.5.3
+jupyterlab==4.4.5
+jupyterlab_pygments==0.3.0
+jupyterlab_server==2.27.3
+jupyterlab_widgets==3.0.15
+lark==1.2.2
+libmambapy @ file:///croot/mamba-split_1734469461757/work/libmambapy
+markdown-it-py @ file:///croot/markdown-it-py_1684279902645/work
+MarkupSafe==3.0.2
+matplotlib-inline==0.1.7
+mdurl @ file:///opt/conda/conda-bld/mdurl_1659716024347/work
+menuinst @ file:///croot/menuinst_1750861706497/work
+mistune==3.1.3
+nbclient==0.10.2
+nbconvert==7.16.6
+nbformat==5.10.4
+nest-asyncio==1.6.0
+notebook==7.4.4
+notebook_shim==0.2.4
+numpy==2.2.6
+openpyxl==3.1.5
+overrides==7.7.0
+packaging @ file:///croot/packaging_1734472117206/work
+pandas==2.3.1
+pandocfilters==1.5.1
+paramiko==3.5.1
+parso==0.8.4
+pexpect==4.9.0
+platformdirs @ file:///croot/platformdirs_1744273042065/work
+pluggy @ file:///croot/pluggy_1733169602837/work
+prometheus_client==0.22.1
+prompt_toolkit==3.0.51
+psutil==7.0.0
+ptyprocess==0.7.0
+pure_eval==0.2.3
+pycosat @ file:///croot/pycosat_1736868416091/work
+pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
+pydantic @ file:///croot/pydantic_1750768261732/work
+pydantic_core @ file:///croot/pydantic-core_1750754736071/work
+Pygments @ file:///croot/pygments_1744664109463/work
+PyNaCl==1.5.0
+PySocks @ file:///home/builder/ci_310/pysocks_1640793678128/work
+python-dateutil==2.9.0.post0
+python-json-logger==3.3.0
+pytz==2025.2
+PyYAML==6.0.2
+pyzmq==27.0.0
+referencing==0.36.2
+requests @ file:///croot/requests_1750426329888/work
+rfc3339-validator==0.1.4
+rfc3986-validator==0.1.1
+rfc3987-syntax==1.1.0
+rich @ file:///croot/rich_1732638981168/work
+rpds-py==0.26.0
+ruamel.yaml @ file:///croot/ruamel.yaml_1745960305322/work
+ruamel.yaml.clib @ file:///croot/ruamel.yaml.clib_1745937152469/work
+Send2Trash==1.8.3
+six==1.17.0
+sniffio==1.3.1
+soupsieve==2.7
+stack-data==0.6.3
+terminado==0.18.1
+tinycss2==1.4.0
+tomli==2.2.1
+tornado==6.5.1
+tqdm @ file:///croot/tqdm_1738943501192/work
+traitlets==5.14.3
+truststore @ file:///croot/truststore_1736550121485/work
+types-python-dateutil==2.9.0.20250708
+typing-inspection @ file:///croot/typing-inspection_1746023470701/work
+typing_extensions @ file:///croot/typing_extensions_1734714854207/work
+tzdata==2025.2
+uri-template==1.3.0
+urllib3 @ file:///croot/urllib3_1750775463400/work
+wcwidth==0.2.13
+webcolors==24.11.1
+webencodings==0.5.1
+websocket-client==1.8.0
+widgetsnbextension==4.0.14
+zstandard @ file:///croot/zstandard_1731356346222/work
