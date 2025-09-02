@@ -2,7 +2,7 @@ import paramiko
 import time
 import subprocess
 import re
-from Init.BaseTools import AutoDev_OtherTools
+from Network_Automation_and_Operations.Init.BaseTools import AutoDev_OtherTools
 
 """
     该py文件存放了AutoDev_TestTools类和AutoDev_ConnectTools类，实例化对象时一般缩写为ADTT和ADCT。
@@ -16,13 +16,18 @@ from Init.BaseTools import AutoDev_OtherTools
 
 """----- AutoDev_TestTools类头部 -----"""
 class AutoDev_TestTools:
-    def __init__(self,count=3, timeout=5):
+    def __init__(self,count=5, timeout=5):
         self.count = count
         self.timeout = timeout
         self.ADOT = AutoDev_OtherTools()
 
     def ADTT_test_ip_ping(self,ip):
-        ADTTCommand = ['ping', '-c', str(self.count), '-W', str(self.timeout), ip]     
+        if self.count != 5 or self.timeout != 5:
+            ADTTCommand = ['ping', '-c', str(self.count), '-W', str(self.timeout), ip]
+
+        else:
+            ADTTCommand = ['ping', ip]
+
         try:
             result = subprocess.run(
                 ADTTCommand,
@@ -54,7 +59,7 @@ class AutoDev_TestTools:
 
 """----- AutoDev_ConnectTools类头部 -----"""
 class AutoDev_ConnectTools:
-    def __init__(self,Init_list):
+    def __init__(self, Init_list: object) -> None:
         # 注释留白
         self.Init_list = Init_list
         # print(f"实例化ADCT：{self.Init_list}")
@@ -97,11 +102,12 @@ class AutoDev_ConnectTools:
 
             self.command = self.ssh_client.invoke_shell()  # 在客户端激活shell 
             time.sleep(1)  # 等待 shell 启动
-            # ADTLogin_Result = self.ip + " SSH连接已激活"
+            ADTLogin_Result = self.ip + " SSH连接已激活"
+            print(ADTLogin_Result)
             return True
             
         except Exception as e:
-            raise ConnectionError(f"SSH连接失败 [{self.ip}]: {str(e)}")
+            print(f"SSH连接失败 [{self.ip}]: {str(e)}")
             return False
 
     def ADCTCommand_Quicky(self,ADCommand="",sleep_time=1):

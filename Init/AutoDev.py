@@ -1,9 +1,10 @@
-from Init.AutoDevTools import *
-from Init.BaseTools import *
-# from AD_ConfigMode.AutoDev_SystemConfig import *
-from AD_ConfigMode.AutoDev_Connector import *
+from Network_Automation_and_Operations.Init.AutoDevTools import *
+from Network_Automation_and_Operations.Init.BaseTools import *
+# from Network_Automation_and_Operations.AD_ConfigMode.AutoDev_SystemConfig import *
+from Network_Automation_and_Operations.AD_ConfigMode.AutoDev_Connector import *
 import os
-
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class AutoDev_Config:
     """
@@ -51,7 +52,7 @@ class AutoDev_Config:
         # print(self.sheet_names)
         self.ADST.ADST_Sheet_dict_Save_as_json_temp(self.target_file_path,self.sheet_names)
 
-        self.ADST.ADST_Config_Classify_By_Device(sheet_names)
+        self.ADST.ADST_Config_Classify_By_Device(self.sheet_names)
            
     def AD_Config_Start_Stage(self,InitConfig_path="AutoDevProFile/Temporary", Change_Name=False,InitConfig_Backup=False):
 
@@ -193,7 +194,160 @@ class AutoDev_OP:
     def AD_OP_Get_Route_Status(self):
         """该方法用于获取路由状态"""
         pass
+
     
+class AutoDev_CreateConfig:
+    """
+    AutoDev_CreateConfig类用于自动批量生成配置命令，根据实际业务需求开发。
+    
+    """
+    def __init__(self,target_file_name="Auto_ConfigCommand_Create_Table_Template.xlsx"):
+
+        # 构造参数
+        self.target_file_name = target_file_name
+        
+        # 实例化基础工具类和数据表工具类
+        self.ADOT = AutoDev_OtherTools()
+        self.ADST = AutoDev_SheetTools()
+        self.ADTT = AutoDev_TestTools()
+        # self.AD_SystemConfig = AutoDev_SystemConfig()
+        self.ADC = AutoDev_Connector()
+
+        # 获取当前路径并构造配置表目录的绝对路径
+        self.config_sheet_dir = self.ADOT.ADOT_GetAndCreat_contents("Config_Sheet")
+
+        # 构造配置表绝对路径        
+        self.target_file_path = os.path.join(self.config_sheet_dir, self.target_file_name)
+
+        # 检查配置表是否存在，如果存在的话，导出配置表的表格名字。
+        if self.ADOT.ADOT_Check_File(self.target_file_path):
+            self.sheet_names = self.ADST.ADST_get_sheet_names(self.target_file_path)
+
+        else:
+            print("error")
+
+    def AD_CreateConfig_File(self):
+        pass
+
+class AutoDev_Engineering_Test:
+    """
+    AutoDev_Engineering_Test类用于工程自动化测试
+    """
+    def __init__(self, target_file_dir: object = "none", target_file_name: object = "Automated_Test_Table_Template.xlsx") -> None:
+        """
+        工程测试类的初始化方法。
+        :param target_file_name: 默认为在桌面的：Automated_Test_Table_Template.xlsx
+        该文件的默认表格模版可以在项目的Config_Sheet目录下查找到。
+        """
+        # 构造参数
+        self.target_file_name = target_file_name
+
+        # 实例化基础工具类和数据表工具类
+        self.ADOT = AutoDev_OtherTools()
+        self.ADST = AutoDev_SheetTools()
+        self.ADTT = AutoDev_TestTools()
+        # self.AD_SystemConfig = AutoDev_SystemConfig()
+        self.ADC = AutoDev_Connector()
+
+        # 获取当前路径并构造配置表目录的绝对路径
+        if target_file_dir == "normal":
+            self.config_sheet_dir = self.ADOT.ADOT_GetAndCreat_contents("Config_Sheet")
+
+        elif target_file_dir == "none":
+            self.config_sheet_dir = os.path.join(self.ADOT.ADOT_Get_Desktop_Path())
+            print(f"target_file_dir == none 已执行。")
+
+        else:
+            self.config_sheet_dir = target_file_dir
+
+        # 构造配置表绝对路径
+        self.target_file_path = os.path.join(self.config_sheet_dir, self.target_file_name)
+        print(f"文件路径：{self.target_file_path}")
+
+        # 检查配置表是否存在，如果存在的话，导出配置表的表格名字。
+        if self.ADOT.ADOT_CheckEx_File_Or_Folder(self.target_file_path):
+            self.sheet_names = self.ADST.ADST_get_sheet_names(self.target_file_path)
+            print(self.sheet_names)
+
+        else:
+            print(f"error:测试表{self.target_file_name}不存在。")
+
+        if "Test_Sheet" in self.sheet_names:
+            Test_Sheet_dict_list = self.ADST.ADST_Export_Sheet_Standardization_dict(self.target_file_path,sheet_name="Test_Sheet")
+            # print(Test_Sheet_dict)
+        else:
+            print(f"error:{self.target_file_path}该文件中没有Init_Sheet进行初始化")
+
+        self.Test_Sheet_dict_list = Test_Sheet_dict_list
+
+
+    def ADET_Test_Function(self):
+        ADCT = AutoDev_ConnectTools(self.Test_Sheet_dict_list)
+        self.Test_Result_dict_list = []
+        print("🔧 正在并发执行 Ping 测试...")
+
+        def test_icmp(test_dict):
+            """仅执行 ICMP 测试"""
+            ip = test_dict['Manage_IP']
+            if self.ADTT.ADTT_test_ip_ping(ip):
+                test_dict["ping_reachable"] = True
+            else:
+                test_dict["ping_reachable"] = False
+            return test_dict
+
+        # 无论设备数量多少，都使用多线程做 Ping（最多3个线程）
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            future_to_device = {
+                executor.submit(test_icmp, test_dict): test_dict
+                for test_dict in self.Test_Sheet_dict_list
+            }
+
+            for future in as_completed(future_to_device):
+                try:
+                    result = future.result()
+                    self.Test_Result_dict_list.append(result)
+                except Exception as exc:
+                    device = future_to_device[future]
+                    print(f"设备 {device['Manage_IP']} Ping 测试异常: {exc}")
+
+        # 按原始顺序排序（重要）
+        ip_to_result = {d['Manage_IP']: d for d in self.Test_Result_dict_list}
+        self.Test_Result_dict_list = [
+            ip_to_result[d['Manage_IP']]
+            for d in self.Test_Sheet_dict_list
+            if d['Manage_IP'] in ip_to_result
+        ]
+
+        print("🔐 正在串行执行 SSH 测试...")
+        for test_dict in self.Test_Result_dict_list:
+            ip = test_dict['Manage_IP']
+            device_name = test_dict['Device_Name']
+
+            # 只对 Ping 通的设备尝试 SSH
+            try:
+                if ADCT.ADCT_Login(device_name):
+                    test_dict["SSH_reachable"] = True
+                    ADCT.ADCTCloss()  # 立即关闭连接
+                else:
+                    test_dict["SSH_reachable"] = False
+            except Exception as e:
+                test_dict["SSH_reachable"] = False
+                print(f"❌ {ip} 执行异常: {e}")
+
+        # 调用结束处理
+        self.ADET_Test_End()
+
+    def ADET_Test_End(self):
+        self.Test_Result_dict_list =[
+            {k: v for k, v in device.items() if k not in ['Manager_Name', 'Manager_Password']}
+            for device in self.Test_Sheet_dict_list
+        ]
+        # print(self.Test_Result_dict_list)
+        self.ADOT.ADOT_Data_Tran_File(self.Test_Result_dict_list,file_name="test_result",save_dir=self.config_sheet_dir,file_format="json",include_date=True)
+
+
+
+
 
 
 

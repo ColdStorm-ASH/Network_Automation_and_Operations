@@ -4,9 +4,12 @@ import re
 import json
 import ipaddress
 import csv
-from datetime import datetime 
+from datetime import datetime
+from typing import Any
+
 import pandas as pd
 from openpyxl import load_workbook
+from pathlib import Path
 
 """
     该py文件存放了AutoDev_SheetTools类和AutoDev_OtherTools类，实例化对象时一般缩写为ADST和ADOT。
@@ -163,7 +166,7 @@ class AutoDev_SheetTools:
                             "config": item
                         })
                 # print(Save_List)
-                self.ADOT.ADOT_Data_Tran_File(Save_List,file_name=DeviceName,file_format="json")         
+                self.ADOT.ADOT_Data_Tran_File(Save_List,file_name=DeviceName,file_format="json")
                 print(f"{sheet_name}表格已标准化处理并存储为临时文件")
                 
             elif type(sheet_names) == str:
@@ -295,7 +298,42 @@ class AutoDev_OtherTools:
         current_dir = os.getcwd()
         print(current_dir)
 
-    
+    @staticmethod
+    def ADOT_Get_Desktop_Path() -> str:
+        # 获取当前用户的主目录
+        home = Path.home()
+
+        # 不同操作系统的桌面路径可能不同
+        system = os.name
+
+        if system == 'nt':  # Windows
+            desktop = home / 'Desktop'
+        else:  # macOS 和 Linux
+            desktop = home / 'Desktop'
+
+        # 检查路径是否存在
+        if desktop.exists():
+            return str(desktop)
+        else:
+            # 如果标准路径不存在，尝试从用户目录配置中获取（适用于某些 Linux 发行版）
+            try:
+                import configparser
+                user_dirs_config = home / '.config' / 'user-dirs.dirs'
+                if user_dirs_config.exists():
+                    config = configparser.ConfigParser()
+                    config.read_string('[DEFAULT]\n' + user_dirs_config.read_text(encoding='utf-8'))
+                    desktop_path = config['DEFAULT'].get('XDG_DESKTOP_DIR', '').strip('"')
+                    if desktop_path.startswith('$HOME'):
+                        desktop_path = desktop_path.replace('$HOME', str(home))
+                    desktop = Path(desktop_path)
+                    if desktop.exists():
+                        return str(desktop)
+            except Exception:
+                pass
+
+            # 作为最后的备选方案，返回推测的路径
+            return str(desktop)
+
     """ ↑↑ 该分类框中方法用于获取或生成各类基础信息(如：路径、文件名等) ↑↑ """
 
     
@@ -458,6 +496,23 @@ class AutoDev_OtherTools:
         :return: 字典，格式为 {"Device_Name": "Manage_IP", ...}
         """
         return {item[key1]: item[key2] for item in input_list if key1 in item and key2 in item}
+
+    def ADOT_InputList_ToDict(self, input_list: object, keys: object) -> list[Any]:
+        """
+        将包含设备信息的列表转换为提取指定键的字典列表，或以某个主键为 key 的嵌套字典。
+
+        :param input_list: 包含字典的列表，每个字典代表一个设备
+        :param keys: 要提取的键名列表，例如 ['Device_Name', 'Manage_IP', 'Model']
+        :return: 字典列表，每个元素是只包含指定 keys 的子字典
+        """
+        result = []
+        for item in input_list:
+            filtered_item = {key: item[key] for key in keys if key in item}
+            # 只有当所有 key 都存在时才完整加入，或者你也可以放宽条件
+            # 如果你想确保所有 key 都存在，可以用：
+            # if all(k in item for k in keys):
+            result.append(filtered_item)
+        return result
 
     def ADOT_Dict_ToKeyListValueList_Sorted(self, input_dict):
         """

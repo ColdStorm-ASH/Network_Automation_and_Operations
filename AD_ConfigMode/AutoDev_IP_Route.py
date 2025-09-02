@@ -1,5 +1,5 @@
-from Init.AutoDevTools import *
-from Init.BaseTools import *
+from Network_Automation_and_Operations.Init.AutoDevTools import *
+from Network_Automation_and_Operations.Init.BaseTools import *
 
 class AutoDev_IP_Route:
     def __init__(self):

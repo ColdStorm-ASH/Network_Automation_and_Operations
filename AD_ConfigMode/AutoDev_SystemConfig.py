@@ -1,5 +1,5 @@
-from Init.AutoDevTools import *
-from Init.BaseTools import *
+from Network_Automation_and_Operations.Init.AutoDevTools import *
+from Network_Automation_and_Operations.Init.BaseTools import *
 
 
 
@@ -55,5 +55,55 @@ class AutoDev_SystemConfig:
                 
         return Command_Standardization_list
 
+    
+class AutoDev_ConfigCommandCreate:
+    def __init__(self):
+        self.ADOT = AutoDev_OtherTools()   
+    
+    def AD3C_BaseService(self,SystemName):
+        pass
+
+    def AD3C_BaseServoce(self):
+        pass
+
+
+
+
+
+"""
+# 改名操作
+sysname XXXX
+
+# console密码配置
+user-interface aux 0
+authentication-mode password
+user-role level-15
+user-role network-admin
+set authentication password simple H3C@123
+quit
+
+# telnet和ssh配置
+ssh server enable
+telnet server enable
+local-user user class manage 
+password simple User@12345
+service-type telnet ssh
+authorization-attribute use networ-admin
+authorization-attribute user-role level-15
+quit
+line vty 0 15 
+authentication-mode scheme 
+protocol inbound all
+quit
+
+# snmp配置
+snmp-agent sys-info version all
+snmp-agent community read public
+snmp-agent community write private
+
+
+
+
+"""
 
 
