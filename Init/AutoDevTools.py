@@ -2,10 +2,10 @@ import paramiko
 import time
 import subprocess
 import re
-from Network_Automation_and_Operations.Init.BaseTools import AutoDev_OtherTools
+from Network_Automation_and_Operations.Init.BaseTools import AutoDevOtherTools
 
 """
-    该py文件存放了AutoDev_TestTools类和AutoDev_ConnectTools类，实例化对象时一般缩写为ADTT和ADCT。
+    该py文件存放了AutoDevTestTools类和AutoDevConnectTools类，实例化对象时一般缩写为ADTT和ADCT。
 
 
 """
@@ -14,14 +14,14 @@ from Network_Automation_and_Operations.Init.BaseTools import AutoDev_OtherTools
 """ 上下注释中间内容为某个分类的方法 """
 """ ↑↑ 这是方法分类注释 ↑↑ """
 
-"""----- AutoDev_TestTools类头部 -----"""
-class AutoDev_TestTools:
+"""----- AutoDevTestTools类头部 -----"""
+class AutoDevTestTools:
     def __init__(self,count=5, timeout=5):
         self.count = count
         self.timeout = timeout
-        self.ADOT = AutoDev_OtherTools()
+        self.ADOT = AutoDevOtherTools()
 
-    def ADTT_test_ip_ping(self,ip):
+    def adtt_test_ip_ping(self,ip):
         if self.count != 5 or self.timeout != 5:
             ADTTCommand = ['ping', '-c', str(self.count), '-W', str(self.timeout), ip]
 
@@ -49,31 +49,32 @@ class AutoDev_TestTools:
             print(f"⚠️ 执行 ping {self.ip} 时出错: {e}")
             return False
 
-    def ADTT_test_passresult_save(self,test_result):
-        test_result_dict = self.ADOT.ADOT_Createdict_passresult()
+    def adtt_test_passresult_save(self,test_result):
+        test_result_dict = self.ADOT.adot_createdict_passresult()
         test_result.append(test_result_dict)
-        self.ADOT.ADOT_Data_Tran_File(test_result,file_name="DevicStatus",save_dir="AutoDevProFile/Temporary/",file_format="json")
+        self.ADOT.adot_data_tran_file(test_result, file_name="DevicStatus", save_dir="AutoDevProFile/Temporary/",
+                                      file_format="json")
         
 
-"""----- AutoDev_TestTools类结尾 -----"""
+"""----- AutoDevTestTools类结尾 -----"""
 
-"""----- AutoDev_ConnectTools类头部 -----"""
-class AutoDev_ConnectTools:
+"""----- AutoDevConnectTools类头部 -----"""
+class AutoDevConnectTools:
     def __init__(self, Init_list: object) -> None:
         # 注释留白
         self.Init_list = Init_list
         # print(f"实例化ADCT：{self.Init_list}")
 
         # 实例化对象
-        self.ADOT = AutoDev_OtherTools()
+        self.ADOT = AutoDevOtherTools()
         
         self.SFTP_IP = "192.168.56.2"
         self.SFTP_Uname = "py-auto-dev"
         self.SFTP_pwd = "H3C-py"
 
-    def ADCT_Login(self,Connect_Dev):
+    def adct_login(self,Connect_Dev):
         
-        matched_devices = self.ADOT.ADOT_InputList_FindDictByValue(self.Init_list,key="Device_Name",value=Connect_Dev)
+        matched_devices = self.ADOT.adot_inputlist_finddictbyvalue(self.Init_list, key="Device_Name", value=Connect_Dev)
         # print(matched_devices)
 
         # 判断是否恰好找到一个匹配项
@@ -110,13 +111,13 @@ class AutoDev_ConnectTools:
             print(f"SSH连接失败 [{self.ip}]: {str(e)}")
             return False
 
-    def ADCTCommand_Quicky(self,ADCommand="",sleep_time=1):
+    def adctcommand_quicky(self,ADCommand="",sleep_time=1):
         """键入命令，Quicky没有输出，默认休息时间为：1"""
         self.command.send(ADCommand + "\n")  # 输入dis version命令
         print(f"执行Quicky中，命令为：{ADCommand}")
         time.sleep(sleep_time)  # 线程推迟1S运行 = 休眠1S'
 
-    def ADCTCommand_Recv(self,ADCommand="",sleep_time=2):
+    def adctcommand_recv(self,ADCommand="",sleep_time=2):
         """键入命令，Recv会return输出，默认休息时间为：2"""
         self.command.send(ADCommand + "\n")  # 输入命令
         print(f"执行Recv中，命令为：{ADCommand}")
@@ -125,12 +126,12 @@ class AutoDev_ConnectTools:
         # print(ADTCommand_Rec_output)
         return ADTCommand_Rec_output
 
-    def ADCTCloss(self):
+    def adctcloss(self):
         self.command.send("\x1a")
         time.sleep(1)
         self.ssh_client.close()
 
-    def ADCT_GetDevName(self):
+    def adct_getdevname(self):
         """获取设备名称（<DeviceName>）"""
         self.command.send("\x1a\n")  # 返回用户视图
         time.sleep(1)
@@ -141,22 +142,22 @@ class AutoDev_ConnectTools:
         else:
             raise Exception("❌ 无法获取设备名称")
 
-    def ADCT_Create_DateName(self,process="backup"):
-        device_name = self.ADCT_GetDevName()
-        ADOT = AutoDev_OtherTools()
+    def adct_create_datename(self,process="backup"):
+        device_name = self.adct_getdevname()
+        ADOT = AutoDevOtherTools()
         if process == "backup":
-            new_file_Datename = ADOT.ADOT_GetDate_FileName(device_name,"startup.cfg")
+            new_file_Datename = ADOT.adot_getdate_filename(device_name,"startup.cfg")
         elif process == "init_backup":
-            new_file_Datename = ADOT.ADOT_GetDate_FileName(device_name,"init_config.cfg")
+            new_file_Datename = ADOT.adot_getdate_filename(device_name,"init_config.cfg")
         else:
-            new_file_Datename = ADOT.ADOT_GetDate_FileName(device_name,process+".cfg")
+            new_file_Datename = ADOT.adot_getdate_filename(device_name,process+".cfg")
             
         return new_file_Datename
 
-    def ADCT_Detect_Output(self, output,detect_type="InitConfig",dev_name=""):
+    def adct_detect_output(self, output,detect_type="InitConfig",dev_name=""):
         """判断输出内容用于交互处理"""
-        ADOT = AutoDev_OtherTools()
-        last_line = ADOT.ADOT_get_last_line(output)  # 只看最后一行
+        ADOT = AutoDevOtherTools()
+        last_line = ADOT.adot_get_last_line(output)  # 只看最后一行
         # print(f"最后一行: {repr(last_line)}")  # 调试用，能看到换行符等
 
         if detect_type == "SFTPLogin":
@@ -195,38 +196,38 @@ class AutoDev_ConnectTools:
             else:
                 return 1
 
-    def ADCT_SaveConfig(self):
-        self.ADCTCommand_Quicky("\x1a")
-        SaveConfig_output = self.ADCTCommand_Recv("save")
+    def adct_saveconfig(self):
+        self.adctcommand_quicky("\x1a")
+        SaveConfig_output = self.adctcommand_recv("save")
         while True:
-            tag = self.ADCT_Detect_Output(SaveConfig_output,detect_type="SaveConfig")
+            tag = self.adct_detect_output(SaveConfig_output, detect_type="SaveConfig")
             if tag == 0:
                 break
             elif tag == 1:
-                SaveConfig_output = self.ADCTCommand_Recv("Y")
+                SaveConfig_output = self.adctcommand_recv("Y")
             elif tag == 2:
-                SaveConfig_output = self.ADCTCommand_Recv(sleep_time=1)
+                SaveConfig_output = self.adctcommand_recv(sleep_time=1)
             else:
                 # print(tag)
-                if self.ADCT_GetDevName() == tag[1:-1]:
+                if self.adct_getdevname() == tag[1:-1]:
                     break
                 else:
-                    SaveConfig_output = self.ADCTCommand_Recv()
+                    SaveConfig_output = self.adctcommand_recv()
 
         # self.ADCTCommand_Quicky()
         return True
 
-    def ADCT_InitConfig(self,dev_name):
-        InitConfig_output = self.ADCTCommand_Recv("\x1a")
+    def adct_initconfig(self,dev_name):
+        InitConfig_output = self.adctcommand_recv("\x1a")
         print(InitConfig_output)
 
         return True
         
 
-    def ADCT_BakCfg_Via_SFTP(self,process="backup",remote_path="AutoDevProFile/Temporary"):
+    def adct_bakcfg_via_sftp(self,process="backup",remote_path="AutoDevProFile/Temporary"):
         """执行 SFTP 备份 startup.cfg 到远程服务器"""
         try:
-            new_file_name = self.ADCT_Create_DateName(process)
+            new_file_name = self.adct_create_datename(process)
             # remote_path = f"/home/py-auto-dev/AutoDevPro/Device_Config_Backup/{new_file_name}"
             backup_file_path = F"AutoDevPro/{remote_path}/{new_file_name}"
             # print(backup_file_path)
@@ -235,23 +236,23 @@ class AutoDev_ConnectTools:
             print(f"🔧 开始 SFTP 备份.......")
 
             # 进入 SFTP
-            self.ADCTCommand_Quicky(f"sftp {self.SFTP_IP}")
-            FTPLogin_output = self.ADCTCommand_Recv(self.SFTP_Uname)
+            self.adctcommand_quicky(f"sftp {self.SFTP_IP}")
+            FTPLogin_output = self.adctcommand_recv(self.SFTP_Uname)
             # print(FTPLogin_output)
 
             # 处理认证交互
             while True:
-                tag = self.ADCT_Detect_Output(FTPLogin_output,detect_type="SFTPLogin")
+                tag = self.adct_detect_output(FTPLogin_output, detect_type="SFTPLogin")
                 if tag == 0:
                     break
                 elif tag == 1:
-                    FTPLogin_output = self.ADCTCommand_Recv("Y")
+                    FTPLogin_output = self.adctcommand_recv("Y")
 
                 else:
-                    FTPLogin_output = self.ADCTCommand_Recv()
+                    FTPLogin_output = self.adctcommand_recv()
 
             # 输入密码
-            PWD_Output = self.ADCTCommand_Recv(self.SFTP_pwd)
+            PWD_Output = self.adctcommand_recv(self.SFTP_pwd)
 
             if "sftp>" not in PWD_Output:
                 print("❌ SFTP 登录失败")
@@ -260,7 +261,7 @@ class AutoDev_ConnectTools:
             print("✅ SFTP 登录成功，开始上传...")
 
             # 执行上传
-            SFTP_result_output = self.ADCTCommand_Recv(f"put startup.cfg {backup_file_path}",sleep_time=3)
+            SFTP_result_output = self.adctcommand_recv(f"put startup.cfg {backup_file_path}", sleep_time=3)
             # print(SFTP_result_output)
 
             if "100%" in SFTP_result_output or "Transfer complete" in SFTP_result_output:
@@ -269,14 +270,14 @@ class AutoDev_ConnectTools:
                 print("❌ 文件上传失败")
 
             # 退出 SFTP
-            self.ADCTCommand_Quicky("quit")
+            self.adctcommand_quicky("quit")
             return True,backup_file_path
 
         except Exception as e:
             print(f"❌ SFTP 备份过程中发生异常: {e}")
             return False
         
-    def ADCT_Command_Issuance(self, command_list):
+    def adct_command_issuance(self, command_list):
         if not self.command or self.command.closed:
             raise Exception("❌ SSH channel 未连接或已关闭，无法发送命令")
             
@@ -298,19 +299,19 @@ class AutoDev_ConnectTools:
             # 根据 mode 调用对应方法
             if mode == "Quick":
                 if sleep_time is not None:
-                    self.ADCTCommand_Quicky(cmd, sleep_time)
+                    self.adctcommand_quicky(cmd, sleep_time)
                 else:
-                    self.ADCTCommand_Quicky(cmd)
+                    self.adctcommand_quicky(cmd)
             elif mode == "Recv":
                 if sleep_time is not None:
-                    self.ADCTCommand_Recv(cmd, sleep_time)
+                    self.adctcommand_recv(cmd, sleep_time)
                 else:
-                    self.ADCTCommand_Recv(cmd)
+                    self.adctcommand_recv(cmd)
             else:
                 # 可选：处理未知 mode
                 print(f"Unknown mode: {mode}")
 
-"""----- AutoDev_ConnectTools类结尾 -----"""
+"""----- AutoDevConnectTools类结尾 -----"""
 
 
 

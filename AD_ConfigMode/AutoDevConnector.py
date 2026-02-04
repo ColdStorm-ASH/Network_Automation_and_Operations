@@ -1,16 +1,16 @@
-from Network_Automation_and_Operations.AD_ConfigMode.AutoDev_IP_Route import *
-from Network_Automation_and_Operations.AD_ConfigMode.AutoDev_SystemConfig import *
+from Network_Automation_and_Operations.AD_ConfigMode.AutoDevIPRoute import *
+from Network_Automation_and_Operations.AD_ConfigMode.AutoDevSystemConfig import *
 from Network_Automation_and_Operations.Init.AutoDevTools import *
 from Network_Automation_and_Operations.Init.BaseTools import *
 
 
-class AutoDev_Connector:
+class AutoDevConnector:
     def __init__(self) -> None:
-        self.ADOT = AutoDev_OtherTools()
-        self.AD_SystemConfig = AutoDev_SystemConfig()
-        self.ADIR = AutoDev_IP_Route()
+        self.ADOT = AutoDevOtherTools()
+        self.AD_SystemConfig = AutoDevSystemConfig()
+        self.ADIR = AutoDevIPRoute()
         
-    def ADC_Function_Call(self,parameter,mode="normal"):
+    def adc_function_call(self,parameter,mode="normal"):
         """
         AutoDev_Function_Call是AutoDev_Connector类的核心方法。用于将接驳器接收到的标准化好的参数分类到对应的方法下执行。
         :param parameter:
@@ -21,7 +21,7 @@ class AutoDev_Connector:
             """
             用于开局基础
             """
-            init_command_list = self.AD_SystemConfig.ADSC_ChangeSystemName(parameter)
+            init_command_list = self.AD_SystemConfig.adsc_changesystemname(parameter)
             print(init_command_list)
             return init_command_list
             
@@ -32,13 +32,13 @@ class AutoDev_Connector:
             """
             if parameter[0]['sheet_name'] == "Port_IP_Sheet(Router)":
                 Config_dict = parameter[1]
-                command_list = self.AD_SystemConfig.ADSC_Port_IP(Config_dict)
+                command_list = self.AD_SystemConfig.adsc_port_ip(Config_dict)
                 # print(command_list)
                 return command_list
 
             elif parameter[0]['sheet_name'] == "IP_Route_Static_Sheet":
                 IP_Route_Static_Config_list = parameter[1::]
-                command_list = self.ADIR.ADIR_Static(IP_Route_Static_Config_list)
+                command_list = self.ADIR.adir_static(IP_Route_Static_Config_list)
                 # print(command_list)
                 return command_list
 

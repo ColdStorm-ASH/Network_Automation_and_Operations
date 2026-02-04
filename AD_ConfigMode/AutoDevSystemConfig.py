@@ -3,38 +3,38 @@ from Network_Automation_and_Operations.Init.BaseTools import *
 
 
 
-class AutoDev_SystemConfig:
+class AutoDevSystemConfig:
     def __init__(self):
-        self.ADOT = AutoDev_OtherTools()
+        self.ADOT = AutoDevOtherTools()
 
-    def ADSC_ConfigSave(self):
+    def adsc_configsave(self):
         # 构造保存命令
         pass
     
-    def ADSC_ChangeSystemName(self, SystemName):
+    def adsc_changesystemname(self, SystemName):
         # 构造 sysname命令
         command = ["sysname",SystemName]
-        command_str = self.ADOT.ADOT_list_to_string(command)
+        command_str = self.ADOT.adot_list_to_string(command)
         return [
             {"command":"system-view ","mode":"Quick","time":""},
             {"command":command_str,"mode":"Quick","time":""},
             {"command":"quit ","mode":"Recv","time":""}
         ]
 
-    def ADSC_Port_IP(self,Config_dict):
+    def adsc_port_ip(self,Config_dict):
         # Command_Standardization_list = [{"command": "system-view ", "mode": "Quick", "time": ""}]
         Command_Standardization_list = []
         for Port_Num,IP_And_Mask in Config_dict.items():
-            result,Port_IP,IP_Mask = self.ADOT.ADOT_Check_IP_And_Mask_Sparate(IP_And_Mask)
+            result,Port_IP,IP_Mask = self.ADOT.adot_check_ip_and_mask_sparate(IP_And_Mask)
 
             if result:
                 # 构造 interface 命令
                 interface_command = ["interface", Port_Num]
-                interface_command_str = self.ADOT.ADOT_list_to_string(interface_command)
+                interface_command_str = self.ADOT.adot_list_to_string(interface_command)
 
                 # 构造 ip address 命令
                 ip_command = ["ip", "address", Port_IP, IP_Mask]
-                ip_command_str = self.ADOT.ADOT_list_to_string(ip_command)
+                ip_command_str = self.ADOT.adot_list_to_string(ip_command)
                 
                 # 按顺序添加三条命令到列表
                 Command_Standardization_list.append({
@@ -56,9 +56,9 @@ class AutoDev_SystemConfig:
         return Command_Standardization_list
 
     
-class AutoDev_ConfigCommandCreate:
+class AutoDevConfigCommandCreate:
     def __init__(self):
-        self.ADOT = AutoDev_OtherTools()   
+        self.ADOT = AutoDevOtherTools()
     
     def AD3C_BaseService(self,SystemName):
         pass

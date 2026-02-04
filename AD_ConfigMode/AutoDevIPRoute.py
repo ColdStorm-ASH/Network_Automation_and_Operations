@@ -1,12 +1,12 @@
 from Network_Automation_and_Operations.Init.AutoDevTools import *
 from Network_Automation_and_Operations.Init.BaseTools import *
 
-class AutoDev_IP_Route:
+class AutoDevIPRoute:
     def __init__(self):
-        self.ADOT = AutoDev_OtherTools()
+        self.ADOT = AutoDevOtherTools()
         
 
-    def ADIR_Static(self, IP_Route_Static_Config_list):
+    def adir_static(self, IP_Route_Static_Config_list):
         # Command_Standardization_list = [{"command": "system-view ", "mode": "Quick", "time": ""}]
         Command_Standardization_list = []
 
@@ -29,7 +29,7 @@ class AutoDev_IP_Route:
                 cmd_parts.append(Preference)
     
             # 拼接完整命令
-            route_command_str = self.ADOT.ADOT_list_to_string(cmd_parts)
+            route_command_str = self.ADOT.adot_list_to_string(cmd_parts)
             # print(route_command_str)
     
             # 返回命令列表（带模式）
@@ -45,5 +45,5 @@ class AutoDev_IP_Route:
         return Command_Standardization_list
 
 
-    def ADIR_OSPF_Base(self, Router_ID, ):
+    def adir_ospf_base(self, Router_ID, ):
         pass
