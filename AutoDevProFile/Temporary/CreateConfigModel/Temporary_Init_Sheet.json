@@ -1,0 +1,26 @@
+[
+    {
+        "Device_Name": "AutoConfig_R1",
+        "Manage_IP": "192.168.56.3",
+        "Manager_Name": "user",
+        "Manager_Password": "User@12345"
+    },
+    {
+        "Device_Name": "AutoConfig_R2",
+        "Manage_IP": "192.168.56.4",
+        "Manager_Name": "user",
+        "Manager_Password": "User@12345"
+    },
+    {
+        "Device_Name": "AutoConfig_R3",
+        "Manage_IP": "192.168.56.5",
+        "Manager_Name": "user",
+        "Manager_Password": "User@12345"
+    },
+    {
+        "Device_Name": "AutoConfig_R4",
+        "Manage_IP": "192.168.56.6",
+        "Manager_Name": "user",
+        "Manager_Password": "User@12345"
+    }
+]

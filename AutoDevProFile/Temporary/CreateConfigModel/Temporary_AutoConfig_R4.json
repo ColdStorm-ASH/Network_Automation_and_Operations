@@ -1,0 +1,13 @@
+[
+    {
+        "Device_Name": "AutoConfig_R4"
+    },
+    {
+        "sheet_name": "Init_Sheet",
+        "config": {
+            "Manage_IP": "192.168.56.6",
+            "Manager_Name": "user",
+            "Manager_Password": "User@12345"
+        }
+    }
+]

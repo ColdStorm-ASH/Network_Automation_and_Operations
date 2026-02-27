@@ -1,0 +1,65 @@
+[
+    {
+        "Device_Name": "AutoConfig_R1"
+    },
+    {
+        "sheet_name": "Init_Sheet",
+        "config": {
+            "Manage_IP": "192.168.56.3",
+            "Manager_Name": "user",
+            "Manager_Password": "User@12345"
+        }
+    },
+    {
+        "sheet_name": "Port_IP_Sheet(Router)",
+        "config": {
+            "G 0/0": "10.10.10.1/24",
+            "G 0/1": null,
+            "G 0/2": null,
+            "loopback 0": "1.1.1.1/32",
+            "loopback 1": "172.16.1.0/24",
+            "loopback 2": "172.16.2.0/24",
+            "loopback 3": "172.16.3.0/24"
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "10.10.11.0",
+            "Mask": "255.255.255.0",
+            "Next-hop_IP": "10.10.10.2",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "2.2.2.2",
+            "Mask": "255.255.255.255",
+            "Next-hop_IP": "10.10.10.2",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "3.3.3.3",
+            "Mask": "255.255.255.255",
+            "Next-hop_IP": "10.10.10.2",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    },
+    {
+        "sheet_name": "IP_Route_Static_Sheet",
+        "config": {
+            "Des_Network": "172.16.4.0",
+            "Mask": "255.255.255.0",
+            "Next-hop_IP": "10.10.10.2",
+            "Next-hop_Port": null,
+            "Preference": null
+        }
+    }
+]
