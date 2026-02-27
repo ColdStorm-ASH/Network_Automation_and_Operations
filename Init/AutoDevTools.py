@@ -52,8 +52,7 @@ class AutoDevTestTools:
     def adtt_test_passresult_save(self,test_result):
         test_result_dict = self.ADOT.adot_createdict_passresult()
         test_result.append(test_result_dict)
-        self.ADOT.adot_data_tran_file(test_result, file_name="DevicStatus", save_dir="AutoDevProFile/Temporary/",
-                                      file_format="json")
+        self.ADOT.adot_data_tran_file(test_result, file_name="DevicStatus", save_dir="AutoDevProFile/Temporary/",file_format="json")
         
 
 """----- AutoDevTestTools类结尾 -----"""

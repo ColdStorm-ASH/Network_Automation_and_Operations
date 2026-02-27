@@ -5,6 +5,7 @@ import json
 import ipaddress
 import csv
 from datetime import datetime
+from traceback import print_tb
 from typing import Any
 
 import pandas as pd
@@ -100,9 +101,11 @@ class AutoDevSheetTools:
         该方法用于导出Init_Sheet中的信息并进行标准化
         """
         sheet_name = "Init_Sheet"
-        Init_Sheet_rows = self.adst_get_sheet_rows(file_path, sheet_name)
-        Init_Sheet_Standardization_List = self.adst_export_rows_standardization(Init_Sheet_rows)
-        return Init_Sheet_Standardization_List
+        init_sheet_rows = self.adst_get_sheet_rows(file_path, sheet_name)
+        print(init_sheet_rows)
+        init_sheet_standardization_list = self.adst_export_rows_standardization(init_sheet_rows)
+        print(init_sheet_standardization_list)
+        return init_sheet_standardization_list
 
     def adst_export_sheet_standardization_dict(self,file_path,sheet_name):
         Sheet_rows = self.adst_get_sheet_rows(file_path, sheet_name)
@@ -116,10 +119,9 @@ class AutoDevSheetTools:
         指定命名为：Temporary_InitConfig.json
         """
         data = self.adst_export_init_sheet_dict(file_path)
-        self.ADOT.adot_data_tran_file(data, file_name="InitConfig", save_dir="AutoDevProFile/Temporary/",
-                                      file_format="json")
+        self.ADOT.adot_data_tran_file(data, file_name="InitConfig", save_dir="AutoDevProFile/Temporary/",file_format="json")
         
-    def adst_sheet_dict_save_as_json_temp(self,file_path,sheet_names):
+    def adst_sheet_dict_save_as_json_temp(self,file_path,sheet_names, save_dir="AutoDevProFile/Temporary/"):
         """
         该方法用于将表格中标准化好的信息保存为一个临时文件。
         指定保存目录：./Device_Config_Backup/Temporary/
@@ -129,74 +131,153 @@ class AutoDevSheetTools:
         if type(sheet_names) == list:
             for sheet_name in sheet_names:
                 data = self.adst_export_sheet_standardization_dict(file_path, sheet_name)
-                self.ADOT.adot_data_tran_file(data, file_name=sheet_name, save_dir="AutoDevProFile/Temporary/",
-                                              file_format="json")
-                print(f"{sheet_name}表格已标准化处理并存储为临时文件")
+                self.ADOT.adot_data_tran_file(data, file_name=sheet_name, save_dir=save_dir,file_format="json")
+                print(f"✅ {sheet_name}表格已标准化处理并存储为临时文件")
                 
         elif type(sheet_names) == str:
             data = self.adst_export_sheet_standardization_dict(file_path, sheet_names)
-            self.ADOT.adot_data_tran_file(data, file_name=sheet_names, save_dir="AutoDevProFile/Temporary/",
-                                          file_format="json")
-            print(f"{sheet_names}表格已标准化处理并存储为临时文件")
+            self.ADOT.adot_data_tran_file(data, file_name=sheet_names, save_dir=save_dir,file_format="json")
+            print(f"✅ {sheet_names}表格已标准化处理并存储为临时文件")
             
         else:
             print(f"你传入的sheet_names为：{type(sheet_names)}类型，该方法传入参数需要为字符串或列表类型。")    
     
-    def adst_config_classify_by_device(self,sheet_names):
+    def adst_config_classify_by_device(self,sheet_names,mode="AutoDevConfig"):
         """
         该方法用于将从表格中标准化好导出的文件变成符合配置使用的配置文件。                 
         """
-        DeviceName_List = self.adst_get_initConfig()
-        # print(DeviceName_List)
-        for DeviceName in DeviceName_List:
-            Save_List = [{"Device_Name":DeviceName}]
-            # print(type(DeviceName))
-            if type(sheet_names) == list:
-                for sheet_name in sheet_names:
-                    ConfigSheet_Path = os.getcwd() + "/AutoDevProFile/Temporary/Temporary_" + sheet_name + ".json"
-                    Sheet_List = self.ADOT.adot_read_data_from_json(ConfigSheet_Path)
+        if mode == "AutoDevConfig":
+            print(f"正在执行{mode}模式操作......")
+            DeviceName_List = self.adst_get_initConfig()
+            # print(DeviceName_List)
+            for DeviceName in DeviceName_List:
+                Save_List = [{"Device_Name":DeviceName}]
+                # print(type(DeviceName))
+                if type(sheet_names) == list:
+                    for sheet_name in sheet_names:
+                        ConfigSheet_Path = os.getcwd() + "/AutoDevProFile/Temporary/Temporary_" + sheet_name + ".json"
+                        Sheet_List = self.ADOT.adot_read_data_from_json(ConfigSheet_Path)
                     
-                    Output_Config_dict = self.ADOT.adot_inputlist_finddictbyvalue(Sheet_List, key="Device_Name",
-                                                                                  value=DeviceName)
-                    Output_Config_dict = self.ADOT.adot_inputlist_deletekeyfromdict(Output_Config_dict,
-                                                                                    key="Device_Name")
+                        Output_Config_dict = self.ADOT.adot_inputlist_finddictbyvalue(Sheet_List, key="Device_Name",value=DeviceName)
+                        Output_Config_dict = self.ADOT.adot_inputlist_deletekeyfromdict(Output_Config_dict,key="Device_Name")
                     # 去除设备标签
+                        # print(Output_Config_dict)
+                        Save_List_Sub = [sheet_name] + Output_Config_dict
+                        # print(Save_List_Sub)
+                        for item in Output_Config_dict:
+                            Save_List.append({
+                                "sheet_name": sheet_name,
+                                "config": item
+                            })
+                    # print(Save_List)
+                    self.ADOT.adot_data_tran_file(Save_List, file_name=DeviceName, file_format="json")
+                    print(f"{sheet_name}表格已标准化处理并存储为临时文件")
+                
+                elif type(sheet_names) == str:
+                    for DeviceName in DeviceName_List:
+                        Save_List = [{"Device_Name":DeviceName}]
+
+                        ConfigSheet_Path = os.getcwd() + "/AutoDevProFile/Temporary/Temporary_" + sheet_names + ".json"
+                        Sheet_List = self.ADOT.adot_read_data_from_json(ConfigSheet_Path)
                     
-                    # print(Output_Config_dict)
-                    Save_List_Sub = [sheet_name] + Output_Config_dict
+                        Output_Config_dict = self.ADOT.adot_inputlist_finddictbyvalue(Sheet_List, key="Device_Name",value=DeviceName)
+                        Output_Config_dict = self.ADOT.adot_inputlist_deletekeyfromdict(Output_Config_dict,key="Device_Name")
+                        # print(Output_Config_dict)
+                        for item in Output_Config_dict:
+                            Save_List.append({
+                                "sheet_name": sheet_names,
+                                "config": item
+                            })
+                        # print(Save_List)
+                        self.ADOT.adot_data_tran_file(Save_List, file_name=DeviceName, file_format="json")
+                    print(f"{sheet_names}表格已标准化处理并存储为临时文件")
+                     
+                else:
+                    print(f"你传入的sheet_names为：{type(sheet_names)}类型，该方法传入参数需要为字符串或列表类型。")
+
+        elif mode == "AutoDevCreateConfig":
+            print(f"正在执行{mode}模式操作......")
+            # CreateConfig模式下，不一定存在初始化表格，所以需要收录所有表格中的设备名称来提供列表。
+            devicename_list = []
+            # for sheet_name in sheet_names:
+            #     sheetfile_path = os.getcwd() + "/AutoDevProFile/Temporary/CreateConfigModel/Temporary_" + sheet_name + ".json"
+            #     sheet_list = self.ADOT.adot_read_data_from_json(sheetfile_path)
+            #     # print(sheet_list)
+            #     # 这里需要提取DeviceName
+            #     devicename_list = self.ADOT.adot_get_unique_device_names(sheet_list)
+            devicename_list = self.adst_get_devicename_list(sheet_names)
+            print(devicename_list)
+            for devicename in devicename_list:
+                save_list = [{"Device_Name": devicename}]
+                for sheet_name in sheet_names:
+                    sheetfile_path = os.getcwd() + "/AutoDevProFile/Temporary/CreateConfigModel/Temporary_" + sheet_name + ".json"
+                    sheet_list = self.ADOT.adot_read_data_from_json(sheetfile_path)
+                    output_config_dict = self.ADOT.adot_inputlist_finddictbyvalue(sheet_list, key="Device_Name",value=devicename)
+                    # print(output_config_dict)
+                    output_config_dict = self.ADOT.adot_inputlist_deletekeyfromdict(output_config_dict, key="Device_Name")
+                    # print(output_config_dict)
+                    save_list_sub = [sheet_name] + output_config_dict
                     # print(Save_List_Sub)
-                    for item in Output_Config_dict:
-                        Save_List.append({
+                    for item in output_config_dict:
+                        save_list.append({
                             "sheet_name": sheet_name,
                             "config": item
                         })
-                # print(Save_List)
-                self.ADOT.adot_data_tran_file(Save_List, file_name=DeviceName, file_format="json")
+                    # print(save_list)
+                self.ADOT.adot_data_tran_file(save_list, file_name=devicename,save_dir="AutoDevProFile/Temporary/CreateConfigModel", file_format="json")
                 print(f"{sheet_name}表格已标准化处理并存储为临时文件")
-                
-            elif type(sheet_names) == str:
-                for DeviceName in DeviceName_List:
-                    Save_List = [{"Device_Name":DeviceName}]
+            return devicename_list
 
-                    ConfigSheet_Path = os.getcwd() + "/AutoDevProFile/Temporary/Temporary_" + sheet_names + ".json"
-                    Sheet_List = self.ADOT.adot_read_data_from_json(ConfigSheet_Path)
-                    
-                    Output_Config_dict = self.ADOT.adot_inputlist_finddictbyvalue(Sheet_List, key="Device_Name",
-                                                                                  value=DeviceName)
-                    Output_Config_dict = self.ADOT.adot_inputlist_deletekeyfromdict(Output_Config_dict,
-                                                                                    key="Device_Name")
-                    # print(Output_Config_dict)
-                    for item in Output_Config_dict:
-                        Save_List.append({
-                            "sheet_name": sheet_names,
-                            "config": item
-                        })
-                    # print(Save_List)
-                    self.ADOT.adot_data_tran_file(Save_List, file_name=DeviceName, file_format="json")
-                print(f"{sheet_names}表格已标准化处理并存储为临时文件")
-                     
-            else:
-                print(f"你传入的sheet_names为：{type(sheet_names)}类型，该方法传入参数需要为字符串或列表类型。") 
+
+
+            # for devicename in devicename_list:
+            #     Save_List = [{"Device_Name": devicename}]
+            #     print(type(devicename))
+            #     if type(sheet_names) == list:
+            #         print("检测到为列表类型")
+            #         for sheet_name in sheet_names:
+            #             ConfigSheet_Path = os.getcwd() + "/AutoDevProFile/Temporary/CreateConfigModel/Temporary_" + sheet_name + ".json"
+            #             Sheet_List = self.ADOT.adot_read_data_from_json(ConfigSheet_Path)
+            #
+
+                    #     Output_Config_dict = self.ADOT.adot_inputlist_finddictbyvalue(Sheet_List, key="Device_Name",value=devicename)
+                    #     Output_Config_dict = self.ADOT.adot_inputlist_deletekeyfromdict(Output_Config_dict,key="Device_Name")
+                    #     # 去除设备标签
+                    #     # print(Output_Config_dict)
+                    #     Save_List_Sub = [sheet_name] + Output_Config_dict
+                    #     # print(Save_List_Sub)
+                    #     for item in Output_Config_dict:
+                    #         Save_List.append({
+                    #             "sheet_name": sheet_name,
+                    #             "config": item
+                    #         })
+                    # # print(Save_List)
+                    #     self.ADOT.adot_data_tran_file(Save_List, file_name=devicename,save_dir="/AutoDevProFile/Temporary/CreateConfigModel", file_format="json")
+                    #     print(f"{sheet_name}表格已标准化处理并存储为临时文件")
+
+                # elif type(sheet_names) == str:
+                #     for devicename in devicename_list:
+                #         Save_List = [{"Device_Name": devicename}]
+                #
+                #         ConfigSheet_Path = os.getcwd() + "/AutoDevProFile/Temporary/CreateConfigModel/Temporary_" + sheet_names + ".json"
+                #         Sheet_List = self.ADOT.adot_read_data_from_json(ConfigSheet_Path)
+                #
+                #         Output_Config_dict = self.ADOT.adot_inputlist_finddictbyvalue(Sheet_List, key="Device_Name",value=devicename)
+                #         Output_Config_dict = self.ADOT.adot_inputlist_deletekeyfromdict(Output_Config_dict,key="Device_Name")
+                #         # print(Output_Config_dict)
+                #         for item in Output_Config_dict:
+                #             Save_List.append({
+                #                 "sheet_name": sheet_names,
+                #                 "config": item
+                #             })
+                #         # print(Save_List)
+                #         self.ADOT.adot_data_tran_file(Save_List, file_name=devicename,save_dir="/AutoDevProFile/Temporary/CreateConfigModel", file_format="json")
+                #     print(f"{sheet_names}表格已标准化处理并存储为临时文件")
+                #
+                # else:
+                #     print(f"你传入的sheet_names为：{type(sheet_names)}类型，该方法传入参数需要为字符串或列表类型。")
+
+
 
     def adst_get_standardization_config_list(self,Config_list):
         if not Config_list:
@@ -209,23 +290,35 @@ class AutoDevSheetTools:
             Standardization_Config_list.append(item['config'])
     
         return Standardization_Config_list
+
+    def adst_get_devicename_list(self,sheet_names):
+        for sheet_name in sheet_names:
+            sheetfile_path = os.getcwd() + "/AutoDevProFile/Temporary/CreateConfigModel/Temporary_" + sheet_name + ".json"
+            sheet_list = self.ADOT.adot_read_data_from_json(sheetfile_path)
+            # print(sheet_list)
+            # 这里需要提取DeviceName
+            devicename_list = self.ADOT.adot_get_unique_device_names(sheet_list)
+            return devicename_list
     
     """ ↑↑ 该分类框中方法用于将表格数据标准化并保存为配置文件 ↑↑ """
 
 
     """ ↓↓ 该分类框中方法用于抽取配置文件中的对应部分 ↓↓ """
-    def adst_getconfig(self,DeviceName,sheet_name):
+    def adst_getconfig(self,DeviceName,sheet_name,file_path="/AutoDevProFile/Temporary/Temporary_"):
 
-        ConfigFile_Path = os.getcwd() + "/AutoDevProFile/Temporary/Temporary_" + DeviceName + ".json"
+        ConfigFile_Path = os.getcwd() + file_path + DeviceName + ".json"
         Config_List = self.ADOT.adot_read_data_from_json(ConfigFile_Path)
-        # print(Config_List)
+        # print(f"adst_getconfig，获取到列表如下{Config_List}")
+        print(f"✅ 已获取到列表")
 
         Config_List_sub = self.ADOT.adot_inputlist_finddictbyvalue(Config_List, key="sheet_name", value=sheet_name)
         
         return Config_List_sub
         
+    def adst_getconfigfile_devicename(self,sheet_names,file_path="/AutoDevProFile/Temporary"):
 
-        
+        pass
+
     
     
     """ ↑↑ 该分类框中方法用于抽取配置文件中的对应部分 ↑↑ """
@@ -292,6 +385,7 @@ class AutoDevOtherTools:
             
             # 构造文件目录的路径
             folder_dir = os.path.join(current_dir, folder)
+            print(f"✅ 已完成路径构造，构造路径为：{folder_dir}")
 
             return folder_dir
 
@@ -563,6 +657,26 @@ class AutoDevOtherTools:
         except Exception as e:
             print(f"发生未知错误: {e}")
 
+    def adot_get_unique_device_names(self, *data_lists):
+        """
+        从传入的多个字典列表中提取 'Device_Name' 并去重，返回名单列表。
+        """
+        device_names_set = set()
+
+        for data_list in data_lists:
+            # 添加类型检查，确保传入的是列表
+            if not isinstance(data_list, list):
+                print(f"警告：传入的参数类型是 {type(data_list)}，期望是 list")
+                print(f"传入的值：{data_list}")
+                continue  # 跳过无效参数
+
+            for item in data_list:
+                if isinstance(item, dict) and 'Device_Name' in item:
+                    name = item['Device_Name']
+                    if name:
+                        device_names_set.add(name)
+
+        return list(device_names_set)
     
     
     """ ↑↑ 该分类框中方法用于处理各类数据格式间的转换 ↑↑ """
@@ -572,16 +686,30 @@ class AutoDevOtherTools:
     
     def adot_save_as_txt(self, data, file_path):
         """保存为 .txt 文件"""
-        content = data if isinstance(data, str) else str(data)
+        if isinstance(data, list):
+            # 将列表中的每个元素转换为字符串，并用换行符连接
+            # strip() 用于去除元素两端可能存在的多余空格（可选，根据需求保留）
+            content = '\n'.join(str(item) for item in data)
+        else:
+            # 保持原有逻辑：非列表直接转为字符串
+            content = data if isinstance(data, str) else str(data)
+
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(content)
-        print(f"TXT 文件已保存: {file_path}")
+
+            # 可选：打印保存的行数统计（如果是列表）
+        if isinstance(data, list):
+            print(f"✅ TXT 文件已保存：{file_path} (共 {len(data)} 行)")
+        else:
+            print(f"✅ TXT 文件已保存：{file_path}")
+
+
 
     def adot_save_as_json(self, file_path, data=None):
         """保存为 .json 文件"""
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        print(f"JSON 文件已保存: {file_path}")
+        print(f"✅ JSON 文件已保存: {file_path}")
 
     def adot_save_as_csv(self, data, file_path):
         """保存为 .csv 文件"""
@@ -603,7 +731,7 @@ class AutoDevOtherTools:
                             writer.writerow([row])  # 单个元素转为列表
             else:
                 writer.writerow([])  # 空数据
-        print(f"CSV 文件已保存: {file_path}")
+        print(f"✅ CSV 文件已保存: {file_path}")
     
     def adot_save_as_xlsx(self, data, file_path):
         """保存为 .xlsx 文件"""
@@ -614,7 +742,7 @@ class AutoDevOtherTools:
         else:
             df = pd.DataFrame([data])  # 其他类型转为单行 DataFrame
         df.to_excel(file_path, index=False, engine='openpyxl')
-        print(f"XLSX 文件已保存: {file_path}")
+        print(f"✅ XLSX 文件已保存: {file_path}")
 
     def adot_read_data_from_json(self, file_path):
         """
@@ -674,7 +802,7 @@ class AutoDevOtherTools:
             elif file_format == 'xlsx':
                 self.adot_save_as_xlsx(Data, file_path)
  
-            print(f"✅ 已成功存储文件到：{file_path}")
+            # print(f"✅ 已成功存储文件到：{file_path}")
 
             return True  # 返回文件路径表示成功
 

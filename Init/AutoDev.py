@@ -1,3 +1,8 @@
+import time
+from typing import final
+
+from invoke.completion.complete import print_task_names
+
 from Network_Automation_and_Operations.Init.AutoDevTools import *
 from Network_Automation_and_Operations.Init.BaseTools import *
 # from Network_Automation_and_Operations.AD_ConfigMode.AutoDevSystemConfig import *
@@ -156,7 +161,7 @@ class AutoDevConfig:
                 Config_Command_Standardization_list_all = [{"command": "system-view ", "mode": "Quick", "time": ""}]
                 for sheet_name in self.sheet_names:
                     print(f"  📄 处理表单: {sheet_name}")
-                    Config_list = self.ADST.ADST_GetConfig(DeviceName, sheet_name)
+                    Config_list = self.ADST.adst_getconfig(DeviceName, sheet_name)
                     Standardization_Config_list = self.ADST.adst_get_standardization_config_list(Config_list)
                     Config_Command_Standardization_list = self.ADC.adc_function_call(Standardization_Config_list)
                     for Config_Command_Standardization in Config_Command_Standardization_list:
@@ -219,22 +224,61 @@ class AutoDevCreateConfig:
         self.ADTT = AutoDevTestTools()
         # self.AD_SystemConfig = AutoDevSystemConfig()
         self.ADC = AutoDevConnector()
+        print(f"✅ 已完成基础参数和工具加载，开始构造表格路径和配置表检测。")
 
         # 获取当前路径并构造配置表目录的绝对路径
         self.config_sheet_dir = self.ADOT.adot_getandcreat_contents("Config_Sheet")
 
         # 构造配置表绝对路径        
         self.target_file_path = os.path.join(self.config_sheet_dir, self.target_file_name)
+        print(f"✅ 已完成配置表绝对路径构造，路径为：{self.target_file_path},开始进行配置表检查。")
 
         # 检查配置表是否存在，如果存在的话，导出配置表的表格名字。
         if self.ADOT.adot_check_file(self.target_file_path):
-            self.sheet_names = self.ADST.adst_get_sheet_names(self.target_file_path)
+            self.sheet_names_list = self.ADST.adst_get_sheet_names(self.target_file_path)
+            print(f"✅ 已检查完毕，配置表存在，读取到配置表中的表格名字信息如下：{self.sheet_names_list}")
 
         else:
-            print("error")
+            print(f"⚠️ 已检查完毕，配置表不存在")
+
+        # 请注意！！！！！init中的文件检测如若修改，则相关代码中关于打开文件的部分也需要修改，在代码内已经内置了目前的存放位置的路径。
 
     def ad_createconfig_file(self):
-        pass
+        # 使用已有工具方法将配置表中的数据导出并按设备分类好所需要的配置信息。
+        # 将配置表中的内容导出转换为json文件，每个表格一个json文件。
+        self.ADST.adst_sheet_dict_save_as_json_temp(self.target_file_path, self.sheet_names_list,save_dir="AutoDevProFile/Temporary/CreateConfigModel/")
+        # 将json文件中的信息按设备进行分类，每个设备构造一个json文件，并输出设备名称列表。
+        device_list = self.ADST.adst_config_classify_by_device(self.sheet_names_list,mode="AutoDevCreateConfig")
+        # print(device_list)
+
+        # 生成各个设备独立的配置单
+        for devicename in device_list:
+            print(f"🔧 正在生成{devicename}的配置")
+            config_command_standardization_list_all = ["system-view "]
+            # print(self.sheet_names_list)
+            for sheet_name in self.sheet_names_list:
+                print(f"  📄 正在处理表单: {sheet_name}")
+                config_list = self.ADST.adst_getconfig(devicename, sheet_name,file_path="/AutoDevProFile/Temporary/CreateConfigModel/Temporary_")
+                # print(config_list)
+                if config_list:
+                    standardization_config_list = self.ADST.adst_get_standardization_config_list(config_list)
+                    # print(standardization_config_list)
+                    config_command_standardization_list = self.ADC.adc_function_call(standardization_config_list,mode="create_config_command",sysname=devicename)
+                    # print(config_command_standardization_list)
+                    for config_command_standardization in config_command_standardization_list:
+                        config_command_standardization_list_all.append(config_command_standardization)
+                    # print(config_command_standardization_list_all)
+                else:
+                    print(f"{sheet_name}为空，跳过。")
+            # print(config_command_standardization_list_all)
+            print(f"正在保存{devicename}配置信息......")
+        #     time.sleep(0.5)
+        #     final_file_save_path = self.ADOT.adot_get_desktop_path() + "/createconfig"
+        #     self.ADOT.adot_data_tran_file(config_command_standardization_list_all,file_name=devicename,save_dir=final_file_save_path,include_date=True)
+        #     time.sleep(0.5)
+        # print(f"已完成所有配置文件生成。")
+
+
 
 class AutoDevEngineeringTest:
     """
